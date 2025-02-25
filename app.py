@@ -6,7 +6,6 @@ from tempfile import NamedTemporaryFile
 st.set_page_config(initial_sidebar_state="collapsed") 
 st.markdown( """ <style> [data-testid="collapsedControl"] { display: none } </style> """, unsafe_allow_html=True, )
 
-st.session_state.data = pd.DataFrame()
 st.title('Mod2Shap')
 st.write("Welcome! Mod2Shap is a web application that can help you run your custom ML models on new patient data and visualize your model's predictions.")
 st.write("")
@@ -28,7 +27,7 @@ if (uploaded_data != None):
     st.session_state.data = data_df
     preview_training = data_df.head()
     st.table(preview_training)
-st.write(st.session_state.data)
+
 st.write("")
 st.write("")
 generate_patient_form = st.button("Generate patient form", type='primary')
