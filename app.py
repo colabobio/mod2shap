@@ -18,6 +18,7 @@ if (uploaded_model != None):
         model_path = temp.name
         interpreter = tf.lite.Interpreter(model_path=model_path)
         interpreter.allocate_tensors()
+        st.session_state.model = interpreter
 
 st.header("Data")
 st.write("Upload your training data below. Please make sure that the first row contains feature and label names, with the last column holding the label information.")
