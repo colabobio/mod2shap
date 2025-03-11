@@ -8,19 +8,35 @@ st.title("Patient Results")
 st.write("Based on your input, the patient results are displayed below.")
 
 model = st.session_state.model
-expected_features = model.get_input_details()[0]['shape'][1]
+input = st.session_state.input_data
+input_details = model.get_input_details()
+output_details = model.get_output_details()
 
-# Trim extra values or add 0.0s to match expected feature count 
-# If expected features is 4 but input before is [2.0, 2.13, 5.5] then it will append 0.0 to make it 4 features --- trims if too many values 
-st.session_state.input_data = (st.session_state.input_data[:expected_features] + [0.0] * (expected_features - len(st.session_state.input_data)))
+if len(input_details > 1):
+    for input_detail in input_details:
+        name = input_detail['name']
+        v = name[name.find('input_feats')+12:-2]
+        idx = v.split('-')
+        if len(idx) == 1:
+            data = input[int(idx[0]):int(idx[0])+1]
+        elif len(idx) == 2:
+            data = input[int(idx[0]):int(idx[1])+1]
 
-# Run inference
-model.set_tensor(0, np.array([st.session_state.input_data], dtype=np.float32)) #Reshapes to (1, num_features)
+        input_shape = input_detail['shape']
+        input_type = input_detail['dtype']
+        input_shaped_data = np.array(data).reshape(input_shape).astype(input_type)
+        model.set_tensor(input_detail['index'], input_shaped_data)
+
+else:
+    input_shape = input_details[0]['shape']
+    input_type = input_details[0]['dtype']
+    input_shaped_data = np.array(input).reshape(input_shape).astype(input_type)
+    model.set_tensor(input_details[0]['index'], input_shaped_data)
+        
 model.invoke()
-predicted_class = np.argmax(model.get_tensor(model.get_output_details()[0]["index"]))
-
-st.write(f"The Patient belongs to class: {['No', 'Yes'][predicted_class]}")
-
+output_data = model.get_tensor(output_details[0]['index'])
+np.array(output_data.flatten())  # Flatten the output for Shap
+st.write(f"Prediction: ", str(output_data[0][0] * 100) + "%")
 
 if st.button("Generate SHAP Visualization", type='primary'):
     st.switch_page('./pages/shap_visualization.py')

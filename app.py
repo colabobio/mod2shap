@@ -10,7 +10,7 @@ st.title('Mod2Shap')
 st.write("Welcome! Mod2Shap is a web application that can help you run your custom ML models on new patient data and visualize your model's predictions.")
 st.write("")
 st.header("Model")
-st.write("Upload your .tflite model below.")
+st.write("Upload your .tflite model below. If your model has more than one tensor, then the input tensor names should be formatted as 'input_feats-0-1' where 0 is the start index and 1 is the end index.")
 uploaded_model = st.file_uploader("Upload Model", type=["tflite"])
 if (uploaded_model != None):
     with NamedTemporaryFile(delete=False) as temp:
@@ -21,7 +21,7 @@ if (uploaded_model != None):
         st.session_state.model = interpreter
 
 st.header("Data")
-st.write("Upload your training data below. Please make sure that the first row contains feature and label names, with the last column holding the label information.")
+st.write("Upload your training data below. Please make sure that the first row contains feature and label names, with the first column holding the label information.")
 uploaded_data = st.file_uploader("Upload data", type=[".csv"])
 if (uploaded_data != None):
     data_df = pd.read_csv(uploaded_data)

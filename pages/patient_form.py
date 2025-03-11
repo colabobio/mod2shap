@@ -8,25 +8,25 @@ st.markdown( """ <style> [data-testid="collapsedControl"] { display: none } </st
 st.title('New Patient Info')
 st.write("Below is the patient form we created based on your data. Please fill it out with your new patient data to create new predicitions and visualizations!")
 data = st.session_state.data
-feature_names = data.columns[:-1]
+feature_names = data.columns
 data_types = data.dtypes.values
 
-input_data = []
+input_data = [0]
 with st.form(key="new_patient_form"):
-    for i in range (len(feature_names)):
+    for i in range (len(feature_names) - 1):
         #int or float input value
-        if ('int' in str(data_types[i])):
-            patient_data = st.number_input(label=feature_names[i])
+        if ('int' in str(data_types[i+1])):
+            patient_data = st.number_input(label=feature_names[i+1])
             input_data.append(np.float32(patient_data))
         #boolean input value
-        elif ('bool' in str(data_types[i])):
-            patient_data = st.checkbox(label=feature_names[i])
+        elif ('bool' in str(data_types[i+1])):
+            patient_data = st.checkbox(label=feature_names[i+1])
             input_data.append(eval(patient_data))
-        elif ('category' in str(data_types[i])):
-            patient_data = st.selectbox(label=feature_names[i], options=data[feature_names[i]].unique())
+        elif ('category' in str(data_types[i+1])):
+            patient_data = st.selectbox(label=feature_names[i+1], options=data[feature_names[i+1]].unique())
             input_data.append(patient_data)
         else:
-            patient_data = st.text_input(label=feature_names[i])
+            patient_data = st.text_input(label=feature_names[i+1])
             input_data.append(patient_data)
     submit = submit_button=st.form_submit_button(label="Submit", type='primary')
 
